@@ -9,7 +9,7 @@
   },
   "channel": null,
   "preflight": {
-    "ran_at": "2026-10-13T15:12:42+00:00",
+    "ran_at": "2026-10-13T15:19:14+00:00",
     "passed": false,
     "checks": {
       "konfiguration": {
@@ -86,10 +86,11 @@
   },
   "usage": {
     "2026-10-13": {
-      "llm:pollinations": 1,
-      "image:pollinations": 1,
-      "tts:edge": 3,
-      "tts:piper": 1
+      "llm:pollinations": 2,
+      "image:pollinations": 2,
+      "tts:edge": 4,
+      "tts:piper": 2,
+      "tts:gemini": 1
     }
   },
   "activity": [
