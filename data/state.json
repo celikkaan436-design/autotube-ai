@@ -82,7 +82,18 @@
   "first_private_upload": null,
   "days": {},
   "videos": [],
-  "stories": [],
+  "stories": [
+    {
+      "id": "test-20261013-154023-bcf3a4",
+      "date": "test-20261013-154023",
+      "title": "Der Spiegelraum",
+      "genre": "Plot-Twist",
+      "hook_style": "warnung",
+      "logline": "Ein Mann bemerkt in seiner neuen Altbauwohnung, dass sein Spiegelbild eine eigene Handlung ausführt.",
+      "words": 122,
+      "review": 8.33
+    }
+  ],
   "analytics": {
     "updated_at": null,
     "channel_daily": [],
@@ -91,12 +102,12 @@
   },
   "usage": {
     "2026-10-13": {
-      "llm:pollinations": 3,
+      "llm:pollinations": 4,
       "image:pollinations": 3,
       "tts:edge": 5,
       "tts:piper": 2,
       "tts:gemini": 1,
-      "llm:gemini": 1
+      "llm:gemini": 7
     }
   },
   "activity": [
@@ -104,6 +115,16 @@
       "ts": "2026-10-09T20:27:21+00:00",
       "level": "info",
       "msg": "AutoTube AI installiert — Einrichtung siehe README"
+    },
+    {
+      "ts": "2026-10-13T15:56:00+00:00",
+      "level": "info",
+      "msg": "Story erstellt: Der Spiegelraum",
+      "data": {
+        "genre": "Plot-Twist",
+        "provider": "gemini",
+        "review": 8.33
+      }
     }
   ],
   "runs": []

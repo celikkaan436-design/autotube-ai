@@ -1,0 +1,132 @@
+{
+  "id": "test-20261013-154023-bcf3a4",
+  "created_at": "2026-10-13T15:56:00+00:00",
+  "title": "Der Spiegelraum",
+  "genre": "Plot-Twist",
+  "logline": "Ein Mann bemerkt in seiner neuen Altbauwohnung, dass sein Spiegelbild eine eigene Handlung ausführt.",
+  "hook_style": "warnung",
+  "setting": "Eine kahle Altbauwohnung im dritten Stock mit einem großen Standspiegel im Flur",
+  "visual_style": "English: dark cinematic style, moody amber interior lighting, 35mm anamorphic lens, muted color palette",
+  "characters": [
+    {
+      "name": "Jonas",
+      "visual": "English: man in his late 20s, short brown hair, wearing a dark blue sweater"
+    }
+  ],
+  "scenes": [
+    {
+      "beat": "hook",
+      "narration": "Schau niemals zu lange in den Spiegel, wenn du allein im Raum bist.",
+      "visual_prompt": "English: man in his late 20s, short brown hair, wearing a dark blue sweater, standing in a dark hallway, staring into a large antique mirror, moody amber interior lighting",
+      "characters": [
+        "Jonas"
+      ],
+      "camera": "zoom_in",
+      "transition": "cut",
+      "audio_cue": "drone",
+      "mood": "dark"
+    },
+    {
+      "beat": "setup",
+      "narration": "Jonas zog gestern in die alte Wohnung im dritten Stock ein. Im Flur stand ein schwerer Standspiegel, den der Vormieter einfach hier ließ.",
+      "visual_prompt": "English: man in his late 20s, short brown hair, wearing a dark blue sweater, examining an antique wooden standing mirror in an empty hallway, dim warm lighting",
+      "characters": [
+        "Jonas"
+      ],
+      "camera": "pan_right",
+      "transition": "crossfade",
+      "audio_cue": "none",
+      "mood": "cold"
+    },
+    {
+      "beat": "setup",
+      "narration": "Am Abend wollte er sich nur schnell die Haare kämmen. Doch das Spiegelbild im Glas bewegte sich eine Sekunde zu spät.",
+      "visual_prompt": "English: close up of a man in his late 20s standing in front of a mirror, reflection showing a slight delay in movement, dramatic shadows",
+      "characters": [
+        "Jonas"
+      ],
+      "camera": "dolly_in",
+      "transition": "crossfade",
+      "audio_cue": "heartbeat",
+      "mood": "dark"
+    },
+    {
+      "beat": "escalation",
+      "narration": "Er hob die Hand zum Gruß, aber das Spiegelbild blieb starr stehen. Stattdessen lächelte es ihn kalt an.",
+      "visual_prompt": "English: man in his late 20s looking shocked at a mirror, his reflection has a different facial expression, cold blue light",
+      "characters": [
+        "Jonas"
+      ],
+      "camera": "zoom_in",
+      "transition": "cut",
+      "audio_cue": "riser",
+      "mood": "dark"
+    },
+    {
+      "beat": "escalation",
+      "narration": "Jonas wollte zurückweichen, doch seine Beine gehorchten ihm nicht mehr. Die Glasfläche begann zu vibrieren wie flüssiges Wasser.",
+      "visual_prompt": "English: man in his late 20s pressing his hands against a shimmering glass surface of a mirror, distortion effect, dark room",
+      "characters": [
+        "Jonas"
+      ],
+      "camera": "shake",
+      "transition": "glitch",
+      "audio_cue": "whoosh",
+      "mood": "red"
+    },
+    {
+      "beat": "twist",
+      "narration": "Plötzlich zog ihn eine eiskalte Hand durch das Glas in die Dunkelheit. Jetzt steht sein Körper im Flur und starrt mich an.",
+      "visual_prompt": "English: view from inside a mirror looking out into a dimly lit hallway where a man stands completely motionless, eerie atmosphere",
+      "characters": [
+        "Jonas"
+      ],
+      "camera": "zoom_out",
+      "transition": "flash",
+      "audio_cue": "impact",
+      "mood": "dark"
+    },
+    {
+      "beat": "ending",
+      "narration": "Und ich komme hier nie wieder weg.",
+      "visual_prompt": "English: abstract dark mirror frame with faint distortion ripples, deep shadows, cinematic finish",
+      "characters": [],
+      "camera": "zoom_out",
+      "transition": "fade_black",
+      "audio_cue": "silence",
+      "mood": "dark"
+    }
+  ],
+  "youtube": {
+    "title": "Der Spiegel hat eine eigene Seele",
+    "description": "Er wollte nur in den Flur gehen. Doch manche Spiegel wollen den Platz tauschen.",
+    "tags": [
+      "Gruselgeschichte",
+      "Mystery",
+      "Plot Twist"
+    ],
+    "thumbnail_text": "Der falsche Zwilling"
+  },
+  "provider": "gemini",
+  "review": {
+    "scores": {
+      "hook": 8.0,
+      "suspense": 8.0,
+      "twist": 9.0,
+      "originality": 7.0,
+      "language": 9.0,
+      "visuals": 9.0
+    },
+    "verdict": "accept",
+    "feedback": [
+      "Die Idee mit dem verzögerten Spiegelbild ist ein bewährter, aber sehr effektiver Horror-Tropus für Shorts.",
+      "Der Perspektivwechsel im Twist („Jetzt steht sein Körper im Flur und starrt mich an“) ist stark und bricht die Erwartung des Zuschauers perfekt.",
+      "Die Bildprompts sind konsistent, detailliert und für KI-Videogeneratoren gut geeignet."
+    ],
+    "average": 8.33,
+    "provider": "gemini",
+    "similarity": 0.0,
+    "attempt": 4
+  },
+  "timeline": null
+}
