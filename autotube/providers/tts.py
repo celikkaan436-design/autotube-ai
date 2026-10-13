@@ -188,6 +188,124 @@ def piper_synthesize(text: str, model_name: str, rate_pct: int, out_dir: Path, s
     return TTSResult(str(wav), duration, estimate_word_timings(tokenize(text), duration), "piper", model_name, True)
 
 
+# ---------------------------------------------------------------- Gemini TTS (Gratis-Kontingent mit GEMINI_API_KEY)
+GEMINI_TTS_URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
+BEAT_STYLE = {
+    "hook": "in a low, tense, mysterious storyteller voice, slowly, as if sharing a dark secret",
+    "setup": "in a calm, atmospheric storyteller voice",
+    "escalation": "in an increasingly tense, slightly faster, suspenseful voice",
+    "twist": "in a shocked, intense, almost whispering voice, with dramatic pauses",
+    "ending": "in a slow, quiet, chilling voice",
+}
+
+
+def gemini_synthesize(text: str, beat: str, models: list[str], voice: str, out_dir: Path, stem: str) -> TTSResult:
+    import base64
+    import os
+
+    key = os.environ.get("GEMINI_API_KEY", "").strip()
+    if not key:
+        raise TTSError("GEMINI_API_KEY fehlt")
+    prompt = f"Read the following German text aloud {BEAT_STYLE.get(beat, BEAT_STYLE['setup'])}:\n\n{text}"
+    body = {
+        "contents": [{"parts": [{"text": prompt}]}],
+        "generationConfig": {
+            "responseModalities": ["AUDIO"],
+            "speechConfig": {"voiceConfig": {"prebuiltVoiceConfig": {"voiceName": voice}}},
+        },
+    }
+    last: Exception | None = None
+    for model in models:
+        try:
+            r = request("POST", GEMINI_TTS_URL.format(model=model), json=body, timeout=180, retries=2, backoff=8.0,
+                        headers={"x-goog-api-key": key, "Content-Type": "application/json"})
+            parts = r.json()["candidates"][0]["content"]["parts"]
+            inline = next(p["inlineData"] for p in parts if "inlineData" in p)
+            pcm = base64.b64decode(inline["data"])
+            rate = 24000
+            mime = inline.get("mimeType", "")
+            if "rate=" in mime:
+                rate = int(mime.split("rate=")[1].split(";")[0])
+            raw = out_dir / f"{stem}.raw.wav"
+            if pcm[:4] == b"RIFF":
+                raw.write_bytes(pcm)
+            else:
+                with wave.open(str(raw), "wb") as wf:
+                    wf.setnchannels(1)
+                    wf.setsampwidth(2)
+                    wf.setframerate(rate)
+                    wf.writeframes(pcm)
+            wav = out_dir / f"{stem}.wav"
+            duration = _to_wav(raw, wav)
+            return TTSResult(str(wav), duration, estimate_word_timings(tokenize(text), duration), "gemini", f"{model}/{voice}", True)
+        except Exception as exc:  # noqa: BLE001
+            log.warning("Gemini-TTS-Modell fehlgeschlagen", data={"model": model, "error": str(exc)[:200]})
+            last = exc
+    raise TTSError(f"Gemini TTS nicht verfügbar: {last}")
+
+
+# ---------------------------------------------------------------- Wortgenaue Zeiten per Whisper (offline)
+_WHISPER = None
+
+
+def _norm_word(w: str) -> str:
+    return re.sub(r"[^\wäöüß]", "", w.lower())
+
+
+def align_words(tokens: list[str], recognized: list[tuple[str, float, float]], duration: float) -> list[Word]:
+    """Ordnet erkannte Whisper-Wörter (mit Zeiten) den Original-Wörtern zu; Lücken werden interpoliert."""
+    import difflib
+
+    a = [_norm_word(t) for t in tokens]
+    b = [_norm_word(r[0]) for r in recognized]
+    times: list[tuple[float, float] | None] = [None] * len(tokens)
+    for blk in difflib.SequenceMatcher(None, a, b, autojunk=False).get_matching_blocks():
+        for k in range(blk.size):
+            _, s, e = recognized[blk.b + k]
+            times[blk.a + k] = (s, e)
+    if sum(t is not None for t in times) < max(2, len(tokens) // 2):
+        raise ValueError("Zu wenige Wörter erkannt")
+    out: list[Word] = []
+    i = 0
+    while i < len(tokens):
+        if times[i] is not None:
+            s, e = times[i]
+            out.append(Word(tokens[i], round(s, 3), round(max(e, s + 0.05), 3)))
+            i += 1
+            continue
+        j = i
+        while j < len(tokens) and times[j] is None:
+            j += 1
+        start = out[-1].end if out else 0.0
+        end = times[j][0] if j < len(tokens) else duration
+        span = tokens[i:j]
+        est = estimate_word_timings(span, max(0.05 * len(span), end - start), lead=0.0, tail=0.0)
+        out += [Word(w.text, round(start + w.start, 3), round(start + w.end, 3)) for w in est]
+        i = j
+    return out
+
+
+def whisper_align(res: TTSResult, text: str, cache: Path) -> TTSResult:
+    """Ersetzt geschätzte Wortzeiten durch echte (faster-whisper, läuft lokal auf dem Runner)."""
+    global _WHISPER
+    try:
+        from faster_whisper import WhisperModel  # noqa: PLC0415
+    except ImportError:
+        return res
+    try:
+        if _WHISPER is None:
+            _WHISPER = WhisperModel("base", device="cpu", compute_type="int8", download_root=str(cache / "whisper"))
+        segments, _ = _WHISPER.transcribe(res.wav_path, language="de", word_timestamps=True, initial_prompt=text,
+                                          beam_size=5, vad_filter=False)
+        recognized = [(w.word, float(w.start), float(w.end)) for s in segments for w in (s.words or [])]
+        res.words = align_words(tokenize(text), recognized, res.duration)
+        res.estimated_timing = False
+        res.provider += "+whisper"
+    except Exception as exc:  # noqa: BLE001
+        log.warning("Whisper-Ausrichtung fehlgeschlagen — geschätzte Wortzeiten", data={"error": str(exc)[:200]})
+    return res
+
+
 # ---------------------------------------------------------------- Öffentliche API
 def synthesize_scene(
     text: str,
@@ -205,24 +323,35 @@ def synthesize_scene(
     pitch = cfg.base_pitch + d_pitch
     errors: list[str] = []
     for provider in cfg.provider_chain:
-        voices = [cfg.voice, *cfg.fallback_voices] if provider == "edge" else [cfg.piper_voice]
+        if provider == "edge":
+            voices = [cfg.voice, *cfg.fallback_voices]
+        elif provider == "gemini":
+            voices = [cfg.gemini_voice]
+        else:
+            voices = [cfg.piper_voice]
         for voice in voices:
             try:
                 budget.check("tts")
                 budget.record("tts", provider)
                 if provider == "edge":
                     res = edge_synthesize(spoken, voice, rate, pitch, out_dir, stem)
+                elif provider == "gemini":
+                    res = gemini_synthesize(spoken, beat, cfg.gemini_tts_models, voice, out_dir, stem)
                 else:
                     res = piper_synthesize(spoken, voice, rate, out_dir, stem, cache_dir)
-                _restore_display_words(res, text)
                 if res.duration < 0.5:
                     raise TTSError("Audio zu kurz")
+                if res.estimated_timing:
+                    res = whisper_align(res, spoken, cache_dir.parent)
+                _restore_display_words(res, text)
                 return res
             except Exception as exc:  # noqa: BLE001
                 if exc.__class__.__name__ == "BudgetExceeded":
                     raise
                 errors.append(f"{provider}/{voice}: {str(exc)[:160]}")
                 log.warning("TTS fehlgeschlagen", data={"provider": provider, "voice": voice, "error": str(exc)[:200]})
+                if provider == "edge" and ("403" in str(exc) or "401" in str(exc)):
+                    break  # Sperre gilt für alle Edge-Stimmen — direkt zum nächsten Anbieter
     raise TTSError("Keine Sprachausgabe möglich: " + " | ".join(errors))
 
 

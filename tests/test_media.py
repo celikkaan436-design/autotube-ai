@@ -34,13 +34,63 @@ class TTSTests(unittest.TestCase):
         def fake_edge(text, voice, rate, pitch, out_dir, stem):
             calls.append(voice)
             if voice == t.config.voice.voice:
-                raise tts.TTSError("403")
+                raise tts.TTSError("Zeitüberschreitung")
             return tts.TTSResult("x.wav", 2.0, [tts.Word("K.I.", 0, .5), tts.Word("ist", .5, 1)], "edge", voice)
 
         with tempfile.TemporaryDirectory() as d, mock.patch.object(tts, "edge_synthesize", fake_edge):
             res = tts.synthesize_scene("KI ist", "hook", t.config.voice, t.ctx.budget, Path(d), "s", Path(d))
         self.assertEqual(calls[:2], [t.config.voice.voice, t.config.voice.fallback_voices[0]])
         self.assertEqual([w.text for w in res.words], ["KI", "ist"])  # Originalschreibweise in Untertiteln
+
+
+class TTSChainTests(unittest.TestCase):
+    def test_whisper_alignment_maps_and_interpolates(self):
+        tokens = ["Um", "drei", "Uhr", "klingelt", "das", "Telefon."]
+        rec = [(" um", 0.1, 0.3), (" drei", 0.35, 0.6), (" Uhr", 0.65, 0.9), (" klingelte", 1.0, 1.5),
+               (" das", 1.55, 1.7), (" Telefon", 1.75, 2.3)]
+        ws = tts.align_words(tokens, rec, 2.6)
+        self.assertEqual([w.text for w in ws], tokens)
+        self.assertEqual((ws[0].start, ws[5].end), (0.1, 2.3))
+        self.assertTrue(0.9 <= ws[3].start < ws[3].end <= 1.55)  # interpoliert zwischen den Nachbarn
+        with self.assertRaises(ValueError):
+            tts.align_words(tokens, [(" hallo", 0, 1)], 2.6)
+
+    def test_edge_block_skips_other_edge_voices(self):
+        t = TmpCtx()
+        calls = []
+
+        def edge(*a, **k):
+            calls.append("edge")
+            raise tts.TTSError("403, message='Invalid response status'")
+
+        def gem(*a, **k):
+            calls.append("gemini")
+            raise tts.TTSError("GEMINI_API_KEY fehlt")
+
+        def piper(text, voice, rate, out_dir, stem, cache):
+            calls.append("piper")
+            return tts.TTSResult("x.wav", 2.0, tts.estimate_word_timings(tts.tokenize(text), 2.0), "piper", voice, True)
+
+        with tempfile.TemporaryDirectory() as d, mock.patch.object(tts, "edge_synthesize", edge), \
+             mock.patch.object(tts, "gemini_synthesize", gem), mock.patch.object(tts, "piper_synthesize", piper), \
+             mock.patch.object(tts, "whisper_align", side_effect=lambda r, txt, c: r):
+            res = tts.synthesize_scene("Das ist ein Test.", "setup", t.config.voice, t.ctx.budget, Path(d), "s", Path(d))
+        self.assertEqual(calls, ["edge", "gemini", "piper"])
+        self.assertEqual(res.provider, "piper")
+
+    def test_gemini_tts_parses_pcm(self):
+        import base64
+        pcm = (np.sin(np.linspace(0, 400, 24000)) * 8000).astype("<i2").tobytes()
+        resp = mock.Mock()
+        resp.json.return_value = {"candidates": [{"content": {"parts": [{"inlineData": {
+            "mimeType": "audio/L16;codec=pcm;rate=24000", "data": base64.b64encode(pcm).decode()}}]}}]}
+        with tempfile.TemporaryDirectory() as d, mock.patch.dict("os.environ", {"GEMINI_API_KEY": "AQ.testtesttesttesttest"}), \
+             mock.patch.object(tts, "request", return_value=resp) as rq:
+            res = tts.gemini_synthesize("Hallo Welt.", "hook", ["gemini-3.8-flash-tts"], "Charon", Path(d), "g")
+            self.assertAlmostEqual(res.duration, 1.0, delta=0.15)
+        body = rq.call_args.kwargs["json"]
+        self.assertEqual(body["generationConfig"]["responseModalities"], ["AUDIO"])
+        self.assertEqual(body["generationConfig"]["speechConfig"]["voiceConfig"]["prebuiltVoiceConfig"]["voiceName"], "Charon")
 
 
 def _fake_tts(sb, d: Path):

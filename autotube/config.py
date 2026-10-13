@@ -37,7 +37,7 @@ class VideoConfig(BaseModel):
 
 
 class VoiceConfig(BaseModel):
-    provider_chain: list[Literal["edge", "piper"]] = ["edge", "piper"]
+    provider_chain: list[Literal["edge", "gemini", "piper"]] = ["edge", "gemini", "piper"]
     voice: str = "de-DE-ConradNeural"
     fallback_voices: list[str] = ["de-DE-KillianNeural", "de-DE-FlorianMultilingualNeural"]
     base_rate: int = 4                 # Prozent, Grundtempo
@@ -47,6 +47,8 @@ class VoiceConfig(BaseModel):
     target_lufs: float = -16.0
     pronunciations: dict[str, str] = Field(default_factory=lambda: {"KI": "K.I.", "z.B.": "zum Beispiel", "WLAN": "W-LAN"})
     piper_voice: str = "de_DE-thorsten-high"
+    gemini_voice: str = "Charon"
+    gemini_tts_models: list[str] = ["gemini-3.8-flash-tts", "gemini-3.8-flash-lite-tts", "gemini-2.5-flash-preview-tts"]
 
 
 class LLMConfig(BaseModel):
