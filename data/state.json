@@ -9,7 +9,7 @@
   },
   "channel": null,
   "preflight": {
-    "ran_at": "2026-10-13T15:19:14+00:00",
+    "ran_at": "2026-10-13T15:37:56+00:00",
     "passed": false,
     "checks": {
       "konfiguration": {
@@ -32,6 +32,11 @@
         "detail": "Outfit + Gloock (OFL)",
         "required": true
       },
+      "textki_gemini": {
+        "ok": true,
+        "detail": "antwortet",
+        "required": false
+      },
       "textki_pollinations": {
         "ok": true,
         "detail": "antwortet",
@@ -39,12 +44,12 @@
       },
       "textki": {
         "ok": true,
-        "detail": "verfügbar: pollinations",
+        "detail": "verfügbar: gemini, pollinations",
         "required": true
       },
       "gemini_key": {
-        "ok": false,
-        "detail": "fehlt (empfohlen, kostenlos)",
+        "ok": true,
+        "detail": "gesetzt",
         "required": false
       },
       "bildki": {
@@ -54,7 +59,7 @@
       },
       "stimme": {
         "ok": true,
-        "detail": "piper/de_DE-thorsten-high, 1.3s, Wortzeiten: geschätzt",
+        "detail": "edge/de-DE-ConradNeural, 1.5s, Wortzeiten: exakt",
         "required": true
       },
       "youtube": {
@@ -86,11 +91,12 @@
   },
   "usage": {
     "2026-10-13": {
-      "llm:pollinations": 2,
-      "image:pollinations": 2,
-      "tts:edge": 4,
+      "llm:pollinations": 3,
+      "image:pollinations": 3,
+      "tts:edge": 5,
       "tts:piper": 2,
-      "tts:gemini": 1
+      "tts:gemini": 1,
+      "llm:gemini": 1
     }
   },
   "activity": [
