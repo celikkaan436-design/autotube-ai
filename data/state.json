@@ -8,7 +8,72 @@
     "last_change_reason": null
   },
   "channel": null,
-  "preflight": null,
+  "preflight": {
+    "ran_at": "2026-10-13T15:12:42+00:00",
+    "passed": false,
+    "checks": {
+      "konfiguration": {
+        "ok": true,
+        "detail": "config/autotube.json gültig",
+        "required": true
+      },
+      "kostenlos": {
+        "ok": true,
+        "detail": "Kostenpflichtige Anbieter gesperrt",
+        "required": true
+      },
+      "ffmpeg": {
+        "ok": true,
+        "detail": "ffmpeg/ffprobe gefunden",
+        "required": true
+      },
+      "schriften": {
+        "ok": true,
+        "detail": "Outfit + Gloock (OFL)",
+        "required": true
+      },
+      "textki_pollinations": {
+        "ok": true,
+        "detail": "antwortet",
+        "required": false
+      },
+      "textki": {
+        "ok": true,
+        "detail": "verfügbar: pollinations",
+        "required": true
+      },
+      "gemini_key": {
+        "ok": false,
+        "detail": "fehlt (empfohlen, kostenlos)",
+        "required": false
+      },
+      "bildki": {
+        "ok": true,
+        "detail": "Testbild von pollinations",
+        "required": true
+      },
+      "stimme": {
+        "ok": true,
+        "detail": "piper/de_DE-thorsten-high, 1.3s, Wortzeiten: geschätzt",
+        "required": true
+      },
+      "youtube": {
+        "ok": false,
+        "detail": "GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET / YOUTUBE_REFRESH_TOKEN fehlen",
+        "required": true
+      },
+      "erster_privater_upload": {
+        "ok": false,
+        "detail": "noch nicht — Workflow 'test-upload' ausführen",
+        "required": true
+      },
+      "github": {
+        "ok": true,
+        "detail": "Releases + Benachrichtigungen aktiv",
+        "required": false
+      }
+    }
+  },
   "first_private_upload": null,
   "days": {},
   "videos": [],
@@ -19,7 +84,14 @@
     "videos": {},
     "insights": null
   },
-  "usage": {},
+  "usage": {
+    "2026-10-13": {
+      "llm:pollinations": 1,
+      "image:pollinations": 1,
+      "tts:edge": 3,
+      "tts:piper": 1
+    }
+  },
   "activity": [
     {
       "ts": "2026-10-09T20:27:21+00:00",
