@@ -195,3 +195,48 @@ class RenderQATests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ImageProviderTests(unittest.TestCase):
+    def setUp(self):
+        from autotube.providers import images as imgs
+        self.imgs = imgs
+        imgs._BLOCKED.clear()
+
+    def _jpeg(self, w, h):
+        import base64
+        import io
+        from PIL import Image as PILImage
+        arr = (np.random.default_rng(1).random((h, w, 3)) * 255).astype("uint8")
+        buf = io.BytesIO()
+        PILImage.fromarray(arr).save(buf, "JPEG", quality=90)
+        return base64.b64encode(buf.getvalue()).decode()
+
+    def test_cloudflare_flux2_multipart_portrait(self):
+        cf = self.imgs.CloudflareImage("acc", "tok", ["@cf/black-forest-labs/flux-2-klein-4b"])
+        resp = mock.Mock(headers={"Content-Type": "application/json"})
+        resp.json.return_value = {"result": {"image": self._jpeg(864, 1536)}, "success": True}
+        with mock.patch.object(self.imgs, "request", return_value=resp) as rq:
+            img = cf.generate("foggy forest", 864, 1536, 7)
+        self.assertEqual(img.size, (864, 1536))
+        files = rq.call_args.kwargs["files"]
+        self.assertEqual((files["width"][1], files["height"][1]), ("864", "1536"))
+
+    def test_cloudflare_schnell_square_is_cropped_to_9_16(self):
+        cf = self.imgs.CloudflareImage("acc", "tok", ["@cf/black-forest-labs/flux-1-schnell"])
+        resp = mock.Mock(headers={"Content-Type": "application/json"})
+        resp.json.return_value = {"result": {"image": self._jpeg(1024, 1024)}}
+        with mock.patch.object(self.imgs, "request", return_value=resp):
+            img = cf.generate("lighthouse", 864, 1536, 7)
+        self.assertAlmostEqual(img.size[0] / img.size[1], 864 / 1536, places=2)
+
+    def test_blocked_provider_is_skipped_for_rest_of_run(self):
+        t = TmpCtx()
+        bad = mock.Mock()
+        bad.name, bad.paid = "pollinations", False
+        bad.generate.side_effect = self.imgs.ImageError("Pollinations fehlgeschlagen: HTTP 402 für x")
+        with tempfile.TemporaryDirectory() as d:
+            m1 = self.imgs.generate_scene_image([bad], t.ctx.budget, "p", Path(d) / "a.jpg", 216, 384, 1, spacing=0)
+            m2 = self.imgs.generate_scene_image([bad], t.ctx.budget, "p", Path(d) / "b.jpg", 216, 384, 2, spacing=0)
+        self.assertTrue(m1["fallback"] and m2["fallback"])
+        self.assertEqual(bad.generate.call_count, 1)  # zweiter Aufruf übersprungen

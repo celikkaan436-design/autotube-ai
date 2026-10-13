@@ -53,7 +53,7 @@ class VoiceConfig(BaseModel):
 
 class LLMConfig(BaseModel):
     provider_chain: list[Literal["gemini", "pollinations", "openrouter"]] = ["gemini", "pollinations", "openrouter"]
-    gemini_models: list[str] = ["gemini-3.8-flash", "gemini-3.6-flash", "gemini-2.5-flash", "gemini-3.5-flash-lite", "gemini-2.5-flash-lite"]
+    gemini_models: list[str] = ["gemini-3.6-flash", "gemini-3.8-flash", "gemini-3.5-flash-lite", "gemini-3.1-flash-lite"]
     pollinations_model: str = "openai"
     openrouter_model: str = "deepseek/deepseek-chat-v3-0324:free"
     temperature: float = 1.0
@@ -63,9 +63,9 @@ class LLMConfig(BaseModel):
 
 
 class ImageConfig(BaseModel):
-    provider_chain: list[Literal["pollinations", "cloudflare"]] = ["pollinations", "cloudflare"]
+    provider_chain: list[Literal["pollinations", "cloudflare"]] = ["cloudflare", "pollinations"]
     pollinations_model: str = "flux"
-    cloudflare_model: str = "@cf/black-forest-labs/flux-1-schnell"
+    cloudflare_models: list[str] = ["@cf/black-forest-labs/flux-2-klein-4b", "@cf/black-forest-labs/flux-1-schnell"]
     gen_width: int = 864
     gen_height: int = 1536
     style_suffix: str = (

@@ -73,7 +73,7 @@ class Gemini(Provider):
             }
             try:
                 r = request(
-                    "POST", self.URL.format(model=model), json=body, timeout=120, retries=2,
+                    "POST", self.URL.format(model=model), json=body, timeout=120, retries=1,
                     headers={"x-goog-api-key": self.api_key, "Content-Type": "application/json"},
                 )
                 data = r.json()

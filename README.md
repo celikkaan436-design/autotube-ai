@@ -15,7 +15,7 @@ Jeden Tag entsteht eine neue, originelle Story als 45–60-Sekunden-Short (1080�
 |---|---|
 | ~07:17 | Story schreiben (Gemini) → Regelprüfung → Duplikat-Check → KI-Lektorat (Bewertung ≥ 7/10) |
 | | Deutsche Sprachausgabe pro Szene mit Wort-Zeitstempeln (Microsoft Edge Neural Voice) |
-| | 6–10 KI-Szenenbilder im gleichen Stil (Pollinations / Flux) |
+| | 6–10 KI-Szenenbilder im gleichen Stil (FLUX.2 über Cloudflare Workers AI) |
 | | Eigene Filmmusik + Soundeffekte (prozedural erzeugt, Content-ID-sicher) |
 | | Rendering: Kamerafahrten (Ken Burns), Übergänge, Color Grading, Filmkorn, wortgenaue animierte Untertitel |
 | | Qualitätsprüfung (Auflösung, Codecs, Dauer, Schwarz-/Standbilder, Stille, Lautheit, Untertitel-Überlauf, Duplikate) |
@@ -41,7 +41,13 @@ weil YouTube den Termin selbst ausführt.
 
 > Ohne Gemini-Schlüssel nutzt das System automatisch Pollinations (ebenfalls gratis, ohne Konto). Mit Gemini werden die Storys aber besser.
 
-### 3. YouTube verbinden
+### 3. Bild-KI: Cloudflare Workers AI (kostenlos, ca. 75 Bilder pro Tag)
+Pollinations erlaubt anonyme Bild-Anfragen inzwischen kaum noch. Deshalb nutzt AutoTube als Haupt-Bildgenerator **FLUX.2 über Cloudflare Workers AI**. Das kostenlose Kontingent liegt bei 10.000 „Neurons“ pro Tag und reicht für etwa 75 Bilder.
+1. Leg auf https://dash.cloudflare.com/sign-up ein kostenloses Konto an (ohne Kreditkarte).
+2. Kopier die **Account ID**: Im Dashboard links unten auf **Account-Startseite** → bei deinem Konto auf **⋯ → Account-ID kopieren** klicken. Speicher sie als Secret `CLOUDFLARE_ACCOUNT_ID`.
+3. Gehe zu **My Profile → API Tokens → Create Token** und wähle die Vorlage **„Workers AI“** → **Continue to summary** → **Create Token**. Speicher den Token als Secret `CLOUDFLARE_API_TOKEN`.
+
+### 4. YouTube verbinden
 **a) Google-Cloud-Projekt**
 1. Öffne https://console.cloud.google.com und lege ein neues Projekt an, z. B. „AutoTube“.
 2. Gehe zu **APIs & Dienste → Bibliothek** und aktiviere **YouTube Data API v3** und **YouTube Analytics API**.
@@ -65,7 +71,7 @@ weil YouTube den Termin selbst ausführt.
 
 **c) Drei Secrets anlegen:** `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `YOUTUBE_REFRESH_TOKEN`
 
-### 4. Testen und aktivieren
+### 5. Testen und aktivieren
 Gehe auf **Actions → „AutoTube · Steuerung“ → Run workflow** und führe die Aktionen der Reihe nach aus:
 
 1. **check**: Prüft live Text-KI, Bild-KI, Stimme, YouTube-Kanal und Berechtigungen. Das Ergebnis steht in der Zusammenfassung des Laufs.
@@ -75,7 +81,7 @@ Gehe auf **Actions → „AutoTube · Steuerung“ → Run workflow** und führe
 
 Pausieren kannst du jederzeit mit **deactivate**.
 
-### 5. Damit die Videos automatisch öffentlich werden: YouTube-API-Audit (kostenlos)
+### 6. Damit die Videos automatisch öffentlich werden: YouTube-API-Audit (kostenlos)
 YouTube setzt Uploads aus **neuen, nicht geprüften** Google-Cloud-Projekten automatisch auf **privat**, auch wenn ein Termin gesetzt ist.
 Das ist eine Regel von YouTube und lässt sich nicht umgehen. Beantrage deshalb einmalig das kostenlose Audit:
 https://support.google.com/youtube/contact/yt_api_form
@@ -90,8 +96,7 @@ ob ein Video wirklich öffentlich ist. Bestätigt wird das erst, wenn die API �
 ## Optionale Gratis-Extras (Secrets)
 | Secret | Wofür | Wo |
 |---|---|---|
-| `POLLINATIONS_TOKEN` | höheres Bild-Kontingent, kein Wasserzeichen | https://enter.pollinations.ai |
-| `CLOUDFLARE_ACCOUNT_ID` + `CLOUDFLARE_API_TOKEN` | Reserve-Bildgenerator (Workers AI, Gratis-Tageskontingent) | Cloudflare-Dashboard → Workers AI |
+| `POLLINATIONS_TOKEN` | Reserve-Bildgenerator, falls Cloudflare ausfällt | https://enter.pollinations.ai |
 | `OPENROUTER_API_KEY` | Reserve-Text-KI (nur `:free`-Modelle) | https://openrouter.ai/keys |
 
 ## Einstellungen
