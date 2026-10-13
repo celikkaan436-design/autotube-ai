@@ -295,7 +295,20 @@ def whisper_align(res: TTSResult, text: str, cache: Path) -> TTSResult:
     try:
         if _WHISPER is None:
             _WHISPER = WhisperModel("base", device="cpu", compute_type="int8", download_root=str(cache / "whisper"))
-        segments, _ = _WHISPER.transcribe(res.wav_path, language="de", word_timestamps=True, initial_prompt=text,
+        # Audio selbst laden (16 kHz float32) statt Dateipfad → umgeht PyAV-Versionskonflikte
+        import numpy as np  # noqa: PLC0415
+        from scipy.signal import resample_poly  # noqa: PLC0415
+
+        with wave.open(res.wav_path, "rb") as wf:
+            sr, ch = wf.getframerate(), wf.getnchannels()
+            pcm = np.frombuffer(wf.readframes(wf.getnframes()), dtype="<i2").astype(np.float32) / 32768.0
+        audio = pcm.reshape(-1, ch).mean(axis=1)
+        if sr != 16000:
+            from math import gcd  # noqa: PLC0415
+
+            g = gcd(sr, 16000)
+            audio = resample_poly(audio, 16000 // g, sr // g).astype(np.float32)
+        segments, _ = _WHISPER.transcribe(audio, language="de", word_timestamps=True, initial_prompt=text,
                                           beam_size=5, vad_filter=False)
         recognized = [(w.word, float(w.start), float(w.end)) for s in segments for w in (s.words or [])]
         res.words = align_words(tokenize(text), recognized, res.duration)
