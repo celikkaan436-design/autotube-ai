@@ -103,8 +103,8 @@
   "usage": {
     "2026-10-13": {
       "llm:pollinations": 4,
-      "image:pollinations": 3,
-      "tts:edge": 5,
+      "image:pollinations": 14,
+      "tts:edge": 12,
       "tts:piper": 2,
       "tts:gemini": 1,
       "llm:gemini": 7
