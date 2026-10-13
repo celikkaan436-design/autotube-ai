@@ -127,5 +127,13 @@
       }
     }
   ],
-  "runs": []
+  "runs": [
+    {
+      "id": "38473937142",
+      "url": "https://github.com/celikkaan436-design/autotube-ai/actions/runs/38473937142",
+      "kind": "verify",
+      "result": "skipped_not_configured",
+      "ts": "2026-10-13T21:54:02+00:00"
+    }
+  ]
 }
