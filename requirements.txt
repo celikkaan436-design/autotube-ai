@@ -1,0 +1,7 @@
+pydantic>=2.6,<3
+requests>=2.31,<3
+numpy>=1.26
+scipy>=1.11
+pillow>=10.2
+opencv-python-headless>=4.9
+edge-tts>=7.0.0

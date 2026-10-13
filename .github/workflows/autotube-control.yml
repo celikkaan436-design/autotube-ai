@@ -1,0 +1,76 @@
+name: "AutoTube · Steuerung"
+
+# Hier steuerst du alles per Klick: Actions → "AutoTube · Steuerung" → "Run workflow".
+on:
+  workflow_dispatch:
+    inputs:
+      aktion:
+        description: "Was soll passieren?"
+        type: choice
+        required: true
+        default: check
+        options:
+          - check          # Systemprüfung aller Verbindungen
+          - test-render    # echtes Testvideo erzeugen (ohne Upload) → Download
+          - test-upload    # Testvideo PRIVAT auf YouTube hochladen (Pflicht vor Aktivierung)
+          - activate       # Autopilot einschalten (prüft vorher alles)
+          - deactivate     # Autopilot pausieren
+          - verify         # Status + Analytics jetzt abrufen
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: autotube-state
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    env:
+      AUTOTUBE_GIT_PERSIST: "1"
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      POLLINATIONS_TOKEN: ${{ secrets.POLLINATIONS_TOKEN }}
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+      YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: ./.github/actions/setup
+      - name: "Aktion: ${{ inputs.aktion }}"
+        run: python -m autotube ${{ inputs.aktion }}
+      - name: Testvideo als Artefakt
+        if: always() && inputs.aktion == 'test-render'
+        uses: actions/upload-artifact@v4
+        with:
+          name: testvideo
+          path: out/
+          if-no-files-found: ignore
+          retention-days: 14
+      - name: Zustand speichern
+        if: always()
+        run: |
+          git config user.name "AutoTube Bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data
+          git diff --cached --quiet && exit 0
+          git commit -m "autotube: ${{ inputs.aktion }} [skip ci]"
+          for i in 1 2 3 4; do git pull --rebase --autostash && git push && exit 0; sleep $((i*5)); done
+          exit 1
+
+  dashboard:
+    needs: run
+    if: always()
+    uses: ./.github/workflows/pages.yml
+    permissions:
+      contents: read
+      pages: write
+      id-token: write

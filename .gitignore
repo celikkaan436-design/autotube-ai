@@ -1,0 +1,15 @@
+# Arbeitsdateien / Renderings
+work/
+out/
+site/
+*.mp4
+*.wav
+*.mp3
+__pycache__/
+*.pyc
+.venv/
+# Secrets niemals committen
+.env
+*.secret
+client_secret*.json
+token*.json

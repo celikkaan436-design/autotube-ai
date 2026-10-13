@@ -1,0 +1,99 @@
+name: "AutoTube · Tägliche Produktion"
+
+# GitHub-Cron läuft in UTC. Das Video wird morgens erstellt und bei YouTube mit
+# publishAt = 18:00 Europe/Berlin (Sommer-/Winterzeit automatisch) eingeplant.
+# Die späteren Läufe sind Wiederholungsversuche, falls ein Lauf fehlschlägt.
+on:
+  schedule:
+    - cron: "17 5 * * *"   # 07:17 MESZ / 06:17 MEZ — Hauptlauf
+    - cron: "47 8 * * *"   # Wiederholung
+    - cron: "47 11 * * *"  # Wiederholung
+    - cron: "7 14 * * *"   # letzter Versuch (16:07 MESZ / 15:07 MEZ)
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Auch ausführen, wenn der Autopilot inaktiv ist"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: autotube-state
+  cancel-in-progress: false
+
+jobs:
+  produce:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    env:
+      AUTOTUBE_GIT_PERSIST: "1"
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      POLLINATIONS_TOKEN: ${{ secrets.POLLINATIONS_TOKEN }}
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+      YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: Autopilot-Status prüfen
+        id: gate
+        run: |
+          enabled=$(python3 -c "import json;print(json.load(open('data/state.json'))['autopilot']['enabled'] if __import__('os').path.exists('data/state.json') else False)")
+          echo "enabled=$enabled" >> "$GITHUB_OUTPUT"
+          echo "Autopilot aktiv: $enabled"
+
+      - uses: ./.github/actions/setup
+        if: steps.gate.outputs.enabled == 'True' || inputs.force
+
+      - name: Slot bestimmen
+        id: slot
+        if: steps.gate.outputs.enabled == 'True' || inputs.force
+        run: echo "key=$(python -m autotube slot)" >> "$GITHUB_OUTPUT"
+
+      - name: Checkpoints laden
+        if: steps.gate.outputs.enabled == 'True' || inputs.force
+        uses: actions/cache/restore@v4
+        with:
+          path: work
+          key: work-${{ steps.slot.outputs.key }}-${{ github.run_id }}
+          restore-keys: work-${{ steps.slot.outputs.key }}-
+
+      - name: Video produzieren und einplanen
+        if: steps.gate.outputs.enabled == 'True' || inputs.force
+        run: python -m autotube daily ${{ inputs.force && '--force' || '' }}
+
+      - name: Checkpoints sichern
+        if: always() && (steps.gate.outputs.enabled == 'True' || inputs.force)
+        uses: actions/cache/save@v4
+        with:
+          path: work
+          key: work-${{ steps.slot.outputs.key }}-${{ github.run_id }}
+
+      - name: Zustand speichern
+        if: always()
+        run: |
+          git config user.name "AutoTube Bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data
+          git diff --cached --quiet && exit 0
+          git commit -m "autotube: Zustand ${{ steps.slot.outputs.key }} [skip ci]"
+          for i in 1 2 3 4; do git pull --rebase --autostash && git push && exit 0; sleep $((i*5)); done
+          exit 1
+
+  dashboard:
+    needs: produce
+    if: always()
+    uses: ./.github/workflows/pages.yml
+    permissions:
+      contents: read
+      pages: write
+      id-token: write

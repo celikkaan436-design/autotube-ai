@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AutoTube AI · Story Edition</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07070a; --panel:#111116; --panel2:#17171e; --line:#26262f; --text:#ececf1; --muted:#8e8e9c;
+  --purple:#a855f7; --purple2:#7c3aed; --cyan:#22d3ee; --green:#34d399; --amber:#fbbf24; --red:#f87171;
+  --glass:rgba(255,255,255,.035); --radius:16px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 Inter,system-ui,sans-serif}
+body{background:radial-gradient(1200px 600px at 85% -10%,rgba(168,85,247,.16),transparent 60%),radial-gradient(900px 500px at -10% 10%,rgba(34,211,238,.08),transparent 60%),var(--bg);min-height:100vh}
+a{color:var(--cyan);text-decoration:none} a:hover{text-decoration:underline}
+h1,h2,h3{font-family:"Space Grotesk",Inter,sans-serif;letter-spacing:-.01em;margin:0}
+.wrap{max-width:1240px;margin:0 auto;padding:20px 16px 60px}
+header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+.logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--purple),var(--cyan));display:grid;place-items:center;font-weight:700;color:#0b0b10;font-family:"Space Grotesk",Inter,system-ui,sans-serif}
+.brand small{display:block;color:var(--muted);font-size:12px}
+.spacer{flex:1}
+.pill{display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border-radius:999px;font-size:13px;font-weight:600;border:1px solid var(--line);background:var(--glass)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.on .dot{background:var(--green);box-shadow:0 0 12px var(--green)} .off .dot{background:var(--amber)}
+nav{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:18px;scrollbar-width:none}
+nav button{flex:none;background:transparent;border:1px solid transparent;color:var(--muted);padding:8px 13px;border-radius:10px;font:inherit;font-size:14px;cursor:pointer;white-space:nowrap}
+nav button.active{color:var(--text);background:var(--panel2);border-color:var(--line)}
+nav button:hover{color:var(--text)}
+.grid{display:grid;gap:14px}
+.kpis{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+.card{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.01));border:1px solid var(--line);border-radius:var(--radius);padding:16px;backdrop-filter:blur(8px);min-width:0}
+.card h3{font-size:15px;margin-bottom:10px;color:#d6d6e0}
+.kpi .label{color:var(--muted);font-size:12.5px;text-transform:uppercase;letter-spacing:.06em}
+.kpi .value{font-family:"Space Grotesk",Inter,system-ui,sans-serif;font-size:26px;font-weight:700;margin-top:4px;overflow-wrap:break-word;hyphens:auto}
+.kpi .sub{color:var(--muted);font-size:13px;margin-top:2px;overflow-wrap:anywhere}
+.accent{color:var(--purple)} .cyan{color:var(--cyan)} .ok{color:var(--green)} .warn{color:var(--amber)} .bad{color:var(--red)}
+.two{grid-template-columns:1.4fr 1fr} @media(max-width:860px){.two{grid-template-columns:1fr}}
+.cta{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:20px;border-radius:var(--radius);border:1px solid rgba(168,85,247,.45);background:linear-gradient(120deg,rgba(124,58,237,.25),rgba(34,211,238,.08))}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 18px;border-radius:12px;border:0;font:600 15px Inter;cursor:pointer;color:#0b0b10;background:linear-gradient(135deg,var(--purple),var(--cyan));text-decoration:none!important}
+.btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+.steps{display:flex;gap:6px;flex-wrap:wrap}
+.step{flex:1 1 90px;padding:10px;border-radius:12px;border:1px solid var(--line);background:var(--panel);font-size:13px;text-align:center;color:var(--muted)}
+.step.done{color:var(--text);border-color:rgba(52,211,153,.4);background:rgba(52,211,153,.07)}
+.step.now{color:var(--text);border-color:var(--purple);box-shadow:0 0 0 1px var(--purple) inset}
+.step.fail{color:var(--red);border-color:rgba(248,113,113,.5)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:500;font-size:12.5px;text-transform:uppercase;letter-spacing:.05em}
+.scroll{overflow-x:auto}
+.tag{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;border:1px solid var(--line);color:var(--muted);margin:0 4px 4px 0}
+.tag.hook{color:var(--cyan);border-color:rgba(34,211,238,.4)} .tag.twist{color:var(--purple);border-color:rgba(168,85,247,.5)}
+.tag.ending{color:var(--amber);border-color:rgba(251,191,36,.4)}
+.videos{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+.vcard{overflow:hidden;padding:0}
+.thumb{aspect-ratio:9/16;max-height:340px;width:100%;background:#0d0d12 center/cover;display:grid;place-items:center;color:var(--muted);font-size:13px;border-bottom:1px solid var(--line)}
+.vcard .body{padding:12px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.cal .d{min-height:62px;border-radius:10px;border:1px solid var(--line);padding:6px;font-size:12px;background:var(--panel)}
+.cal .d.today{border-color:var(--cyan)} .cal .h{color:var(--muted);font-size:12px;text-align:center}
+.cal .s{display:block;margin-top:6px;font-size:11px;border-radius:6px;padding:2px 4px}
+.s-published{background:rgba(52,211,153,.18);color:var(--green)} .s-scheduled{background:rgba(168,85,247,.2);color:#d8b4fe}
+.s-uploaded{background:rgba(34,211,238,.15);color:var(--cyan)} .s-failed,.s-not_public,.s-missed{background:rgba(248,113,113,.15);color:var(--red)}
+.s-other{background:rgba(255,255,255,.06);color:var(--muted)}
+.log{font:12.5px ui-monospace,SFMono-Regular,Menlo,monospace;max-height:520px;overflow:auto}
+.log div{padding:6px 0;border-bottom:1px dashed var(--line);overflow-wrap:anywhere}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;font:12.5px ui-monospace,Menlo,monospace;color:#cfcfe0;margin:0}
+.muted{color:var(--muted)} .small{font-size:13px}
+.bar{height:8px;border-radius:99px;background:var(--panel2);overflow:hidden} .bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--purple),var(--cyan))}
+.empty{padding:26px;text-align:center;color:var(--muted)}
+.notice{border-left:3px solid var(--amber);padding:10px 14px;background:rgba(251,191,36,.07);border-radius:8px;font-size:14px}
+section{display:none} section.active{display:block;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+svg text{fill:var(--muted);font:11px Inter}
+@media(max-width:520px){.kpis{grid-template-columns:1fr 1fr}.kpi .value{font-size:20px}.card{padding:13px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">AT</div>
+    <div class="brand"><h1 style="font-size:20px">AutoTube AI</h1><small>Story Edition · deutsche KI-Gruselgeschichten</small></div>
+    <div class="spacer"></div>
+    <span id="apPill" class="pill off"><span class="dot"></span><span>Autopilot …</span></span>
+    <span id="ytPill" class="pill"><span class="dot"></span><span>YouTube …</span></span>
+  </header>
+  <nav id="nav"></nav>
+  <main id="main"><div class="empty">Lade Daten …</div></main>
+  <p class="muted small" style="margin-top:28px">Stand: <span id="updated">–</span> · Daten stammen ausschließlich aus echten Läufen und der YouTube-API. Kosten: 0 € (nur kostenlose Dienste).</p>
+</div>
+<script>
+const TABS=[["dash","Dashboard"],["studio","Story Studio"],["autopilot","Autopilot"],["calendar","Kalender"],["library","Videothek"],["channel","YouTube-Kanal"],["analytics","Analytics"],["ai","KI-Anbieter"],["costs","Kosten & Kontingente"],["logs","Logs & Einstellungen"]];
+const STEPS=[["pending","Geplant"],["story_ready","Story"],["voice_ready","Stimme"],["images_ready","Bilder"],["qa_passed","Render + QA"],["uploaded","Upload"],["scheduled","Eingeplant"],["published","Öffentlich"]];
+const STATUS_DE={pending:"geplant",story_ready:"Story fertig",voice_ready:"Stimme fertig",images_ready:"Bilder fertig",rendered:"gerendert",qa_passed:"QA bestanden",uploaded:"hochgeladen (privat)",scheduled:"eingeplant 18:00",published:"öffentlich ✓",not_public:"nicht öffentlich",failed:"fehlgeschlagen",missed:"verpasst"};
+let S=null;
+const $=s=>document.querySelector(s);
+const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmtN=n=>n==null?"–":new Intl.NumberFormat("de-DE").format(n);
+const fmtD=s=>s?new Date(s).toLocaleString("de-DE",{timeZone:"Europe/Berlin",dateStyle:"medium",timeStyle:"short"}):"–";
+const repoUrl=()=>S.repo?`https://github.com/${S.repo}`:"#";
+const wfUrl=f=>`${repoUrl()}/actions/workflows/${f}`;
+function stTag(st){const c=["published","scheduled","uploaded","failed","not_public","missed"].includes(st)?st:"other";return `<span class="s s-${c}">${esc(STATUS_DE[st]||st)}</span>`}
+
+async function load(){
+  try{const r=await fetch("state.json?"+Date.now());S=await r.json();}catch(e){$("#main").innerHTML='<div class="card empty">Noch keine Daten. Führe einmal „AutoTube · Steuerung → check“ aus.</div>';return}
+  $("#updated").textContent=fmtD(S.runs?.at(-1)?.ts||S.analytics?.updated_at);
+  const on=S.autopilot?.enabled;
+  $("#apPill").className="pill "+(on?"on":"off");$("#apPill").lastElementChild.textContent=on?"Autopilot aktiv":"Autopilot inaktiv";
+  const yt=S.channel;$("#ytPill").className="pill "+(yt?"on":"off");$("#ytPill").lastElementChild.textContent=yt?yt.title:"YouTube nicht verbunden";
+  $("#nav").innerHTML=TABS.map(([id,l])=>`<button data-t="${id}">${l}</button>`).join("");
+  $("#main").innerHTML=TABS.map(([id])=>`<section id="t-${id}"></section>`).join("");
+  $("#nav").onclick=e=>{const t=e.target.dataset.t;if(t){location.hash=t;show(t)}};
+  render();show(location.hash.slice(1)||"dash");
+}
+function show(t){document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.t===t));document.querySelectorAll("main section").forEach(s=>s.classList.toggle("active",s.id==="t-"+t))}
+
+function render(){
+  const days=S.days||{}, keys=Object.keys(days).sort();
+  const vids=(S.videos||[]).filter(v=>v.video_id&&!v.test);
+  const published=vids.filter(v=>v.published_confirmed_at);
+  const an=S.analytics||{}, avids=an.videos||{};
+  const totalViews=vids.reduce((a,v)=>a+(avids[v.video_id]?.stats?.viewCount||0),0);
+  const failed=keys.filter(k=>days[k].status==="failed").length;
+  const lastUp=[...vids].reverse().find(v=>v.video_id);
+  const next=S.next_slot?new Date(S.next_slot):null;
+  const nextKey=next?next.toLocaleDateString("sv-SE",{timeZone:"Europe/Berlin"}):null;
+  const cur=nextKey&&days[nextKey]?days[nextKey]:{status:"pending"};
+  const usageToday=S.usage?.[new Date().toLocaleDateString("sv-SE",{timeZone:"Europe/Berlin"})]||{};
+  const cost=Object.values(S.usage||{}).reduce((a,u)=>a+(u.cost_eur||0),0);
+  const pre=S.preflight;
+  // ---------- Dashboard
+  const idx=STEPS.findIndex(s=>s[0]===cur.status);
+  $("#t-dash").innerHTML=`
+  ${S.autopilot?.enabled?"":`<div class="cta" style="margin-bottom:14px"><div style="flex:1;min-width:220px"><h2 style="font-size:20px">Autopilot ist aus</h2><div class="muted small">Prüft alle Verbindungen und startet die tägliche Veröffentlichung um 18:00.</div></div><a class="btn" href="#autopilot" onclick="show('autopilot')">⚡ ACTIVATE AUTOPILOT</a></div>`}
+  <div class="grid kpis">
+    ${kpi("YouTube",S.channel?esc(S.channel.title):"nicht verbunden",S.channel?`${fmtN(S.channel.subscribers)} Abonnenten`:"Secrets fehlen",S.channel?"ok":"warn")}
+    ${kpi("Autopilot",S.autopilot?.enabled?"AKTIV":"INAKTIV",S.autopilot?.enabled?"seit "+fmtD(S.autopilot.activated_at):"Aktivierung erforderlich",S.autopilot?.enabled?"ok":"warn")}
+    ${kpi("Nächste Veröffentlichung",next?next.toLocaleString("de-DE",{timeZone:"Europe/Berlin",weekday:"short",day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"}):"–",`<span id="cd"></span>`,"accent")}
+    ${kpi("Veröffentlicht",fmtN(published.length),`${fmtN(vids.length)} hochgeladen`,"cyan")}
+    ${kpi("Aufrufe (gesamt)",fmtN(totalViews),an.updated_at?"Stand "+fmtD(an.updated_at):"noch keine Daten")}
+    ${kpi("Abonnenten",S.channel?fmtN(S.channel.subscribers):"–",subsDelta(an))}
+    ${kpi("KI-Kosten",cost.toLocaleString("de-DE",{style:"currency",currency:"EUR"}),"nur Gratis-Kontingente","ok")}
+    ${kpi("Fehlgeschlagene Jobs",fmtN(failed),"gesamt",failed?"bad":"ok")}
+    ${kpi("Letzter Upload",lastUp?esc(lastUp.date):"–",lastUp?`<a href="https://studio.youtube.com/video/${esc(lastUp.video_id)}/edit" target="_blank">${esc(lastUp.title||lastUp.video_id)}</a>`:"noch keiner")}
+  </div>
+  <div class="card" style="margin-top:14px"><h3>Aktuelle Produktion · ${esc(nextKey||"–")} ${stTag(cur.status)}</h3>
+    <div class="steps">${STEPS.map(([k,l],i)=>`<div class="step ${cur.status==="failed"&&i===Math.max(0,idx)?"fail":i<idx||(i===idx&&i>0)?"done":i===idx+1?"now":""}">${l}</div>`).join("")}</div>
+    ${cur.title?`<p class="small" style="margin:12px 0 0">„${esc(cur.title)}“ · ${esc(cur.genre||"")} ${cur.duration?`· ${cur.duration}s`:""}</p>`:""}
+    ${cur.note?`<p class="notice" style="margin-top:12px">${esc(cur.note)}</p>`:""}
+    ${(cur.errors||[]).slice(-2).map(e=>`<p class="small bad" style="margin:8px 0 0">${esc(e.error)}</p>`).join("")}
+  </div>
+  <div class="grid two" style="margin-top:14px">
+    <div class="card"><h3>Aufrufe pro Tag (28 Tage)</h3>${lineChart((an.channel_daily||[]).map(d=>[d.day,d.views]))}</div>
+    <div class="card"><h3>Letzte Aktivität</h3><div class="log" style="max-height:240px">${(S.activity||[]).slice(-12).reverse().map(a=>`<div><span class="${a.level==="error"?"bad":a.level==="warning"?"warn":"muted"}">${fmtD(a.ts)}</span> ${esc(a.msg)}</div>`).join("")||'<div class="muted">–</div>'}</div></div>
+  </div>`;
+  if(next){const tick=()=>{const el=$("#cd");if(!el)return;const ms=next-Date.now();el.textContent=ms>0?`in ${Math.floor(ms/36e5)} h ${Math.floor(ms%36e5/6e4)} min`:"jetzt"};tick();setInterval(tick,30000)}
+  // ---------- Story Studio
+  const stories=[...(S.story_details||[])].reverse();
+  $("#t-studio").innerHTML=stories.length?stories.map(sb=>`<div class="card" style="margin-bottom:14px">
+    <h3 style="font-size:18px">${esc(sb.title)} <span class="tag">${esc(sb.genre)}</span><span class="tag">Hook: ${esc(sb.hook_style)}</span>${sb.review?.average?`<span class="tag">Review ${sb.review.average}/10</span>`:""}</h3>
+    <p class="muted small" style="margin:0 0 10px">${esc(sb.logline)}</p>
+    <div class="scroll"><table><tr><th>#</th><th>Abschnitt</th><th>Erzähltext</th><th>Bild / Kamera</th></tr>
+    ${sb.scenes.map((s,i)=>`<tr><td>${i+1}</td><td><span class="tag ${s.beat}">${s.beat}</span>${sb.timeline?.scenes?.[i]?`<div class="muted small">${sb.timeline.scenes[i].start.toFixed(1)}–${sb.timeline.scenes[i].end.toFixed(1)}s</div>`:""}</td><td>${esc(s.narration)}</td><td class="small muted">${esc(s.visual_prompt)}<br><span class="cyan">${s.camera} · ${s.transition} · ${s.audio_cue}</span></td></tr>`).join("")}
+    </table></div></div>`).join(""):`<div class="card empty">Noch keine Storys. Starte „test-render“ in der Steuerung.</div>`;
+  // ---------- Autopilot
+  $("#t-autopilot").innerHTML=`
+  <div class="cta"><div style="flex:1;min-width:220px"><h2 style="font-size:22px">${S.autopilot?.enabled?"Autopilot läuft ✓":"ACTIVATE AUTOPILOT"}</h2>
+  <div class="muted small">Die Aktivierung prüft automatisch Text-KI, Bild-KI, Stimme, YouTube-Verbindung, Berechtigungen und einen verifizierten privaten Test-Upload. Nur wenn alles grün ist, wird eingeschaltet.</div></div>
+  <a class="btn" target="_blank" href="${wfUrl("autotube-control.yml")}">${S.autopilot?.enabled?"Steuerung öffnen":"⚡ Aktivieren"}</a></div>
+  <p class="small muted">So geht's: Link öffnen → <b>Run workflow</b> → Aktion <b>${S.autopilot?.enabled?"deactivate":"activate"}</b> wählen → <b>Run workflow</b>. Reihenfolge beim ersten Mal: <b>check</b> → <b>test-render</b> → <b>test-upload</b> → <b>activate</b>.</p>
+  <div class="grid two" style="margin-top:14px">
+   <div class="card"><h3>Systemprüfung ${pre?`· ${fmtD(pre.ran_at)} · ${pre.passed?'<span class="ok">bestanden</span>':'<span class="bad">nicht bestanden</span>'}`:""}</h3>
+   ${pre?`<div class="scroll"><table>${Object.entries(pre.checks).map(([k,c])=>`<tr><td>${c.ok?"✅":c.required?"❌":"⚠️"}</td><td>${esc(k)}</td><td class="small muted">${esc(c.detail)}</td></tr>`).join("")}</table></div>`:'<div class="muted">Noch nicht ausgeführt.</div>'}</div>
+   <div class="card"><h3>Zeitplan (Europe/Berlin, Sommer-/Winterzeit automatisch)</h3><table>
+   <tr><td>~07:17</td><td>Story → Stimme → Bilder → Rendering → QA → privater Upload mit Termin</td></tr>
+   <tr><td>~10:47 / 13:47 / 16:07</td><td>automatische Wiederholung, falls ein Schritt scheiterte</td></tr>
+   <tr><td class="accent"><b>18:00</b></td><td>YouTube veröffentlicht das Video selbst (publishAt)</td></tr>
+   <tr><td>~19:23</td><td>Veröffentlichung verifizieren + Analytics sammeln</td></tr></table>
+   <p class="small muted">Im Winter laufen die Morgen-Jobs eine Stunde früher (GitHub-Zeitplan ist UTC). Die 18:00-Veröffentlichung bleibt exakt.</p></div>
+  </div>`;
+  // ---------- Kalender
+  $("#t-calendar").innerHTML=`<div class="card">${calendar(days)}</div>`;
+  // ---------- Videothek
+  const lib=[...(S.videos||[])].reverse();
+  $("#t-library").innerHTML=lib.length?`<div class="grid videos">${lib.map(v=>{const pub=v.privacy==="public"||v.published_confirmed_at;const th=pub&&v.video_id?`style="background-image:url(https://i.ytimg.com/vi/${esc(v.video_id)}/hq720.jpg)"`:"";return `<div class="card vcard"><div class="thumb" ${th}>${pub?"":(v.test?"Testvideo":"privat / eingeplant")}</div><div class="body">
+  <b>${esc(v.title||v.story_title)}</b><div class="small muted">${esc(v.date)} · ${esc(v.genre||"")} · ${v.duration?v.duration+"s":""}</div>
+  <div class="small" style="margin-top:6px">${v.test?'<span class="tag">Test</span>':""}${v.privacy?`<span class="tag">${esc(v.privacy)}</span>`:""}${v.publish_at?`<span class="tag">⏰ ${fmtD(v.publish_at)}</span>`:""}</div>
+  <div class="small" style="margin-top:6px">${v.video_id?`<a target="_blank" href="${pub?`https://youtube.com/shorts/${esc(v.video_id)}`:`https://studio.youtube.com/video/${esc(v.video_id)}/edit`}">${pub?"Auf YouTube ansehen":"In Studio öffnen"}</a> · `:""}${v.release_url?`<a target="_blank" href="${esc(v.release_url)}">MP4 herunterladen</a>`:""}</div></div></div>`}).join("")}</div>`:`<div class="card empty">Noch keine Videos.</div>`;
+  // ---------- Kanal
+  const ch=S.channel;
+  $("#t-channel").innerHTML=ch?`<div class="grid two"><div class="card"><h3>Verbundener Kanal</h3><div style="display:flex;gap:12px;align-items:center">${ch.thumbnail?`<img src="${esc(ch.thumbnail)}" width="56" height="56" style="border-radius:50%">`:""}<div><b style="font-size:18px">${esc(ch.title)}</b><div class="small muted">${esc(ch.custom_url||ch.id)}</div></div></div>
+   <table style="margin-top:12px"><tr><td>Abonnenten</td><td>${fmtN(ch.subscribers)}</td></tr><tr><td>Aufrufe gesamt</td><td>${fmtN(ch.views)}</td></tr><tr><td>Videos</td><td>${fmtN(ch.videos)}</td></tr><tr><td>Geprüft</td><td>${fmtD(ch.checked_at)}</td></tr><tr><td>Erster privater Test-Upload</td><td>${S.first_private_upload?`<span class="ok">verifiziert</span> (${esc(S.first_private_upload.video_id)})`:'<span class="warn">ausstehend</span>'}</td></tr></table></div>
+   <div class="card"><h3>Wichtig: YouTube-API-Audit</h3><p class="notice">Uploads aus neuen, nicht geprüften Google-Cloud-Projekten setzt YouTube automatisch auf <b>privat</b>. Damit Videos um 18:00 automatisch öffentlich werden, einmalig das kostenlose Audit beantragen.</p><p><a class="btn ghost" target="_blank" href="https://support.google.com/youtube/contact/yt_api_form">Audit-Formular öffnen</a></p><p class="small muted">Bis dahin: Videos liegen privat in YouTube Studio und können dort mit einem Klick veröffentlicht werden. Jedes Video gibt es zusätzlich als MP4-Download.</p></div></div>`
+   :`<div class="card"><h3>YouTube nicht verbunden</h3><p class="muted">Lege die Secrets <code>GOOGLE_CLIENT_ID</code>, <code>GOOGLE_CLIENT_SECRET</code> und <code>YOUTUBE_REFRESH_TOKEN</code> an (Anleitung in der README) und führe danach „check“ aus.</p><a class="btn ghost" target="_blank" href="${repoUrl()}/settings/secrets/actions">Secrets öffnen</a></div>`;
+  // ---------- Analytics
+  const rows=vids.map(v=>({v,a:avids[v.video_id]?.analytics||{},s:avids[v.video_id]?.stats||{}})).reverse();
+  const ins=an.insights||{};
+  $("#t-analytics").innerHTML=`<div class="grid two"><div class="card"><h3>Kanal: Aufrufe & Abonnenten (28 Tage)</h3>${lineChart((an.channel_daily||[]).map(d=>[d.day,d.views]))}${lineChart((an.channel_daily||[]).map(d=>[d.day,(d.subscribersGained||0)-(d.subscribersLost||0)]),"var(--cyan)")}</div>
+  <div class="card"><h3>Was das System gelernt hat</h3>${(ins.notes||[]).map(n=>`<p class="small">• ${esc(n)}</p>`).join("")||'<p class="muted small">Noch keine Daten.</p>'}
+  ${barList("Genres",ins.genres)}${barList("Hook-Stile",ins.hook_styles)}</div></div>
+  <div class="card" style="margin-top:14px"><h3>Videos</h3><div class="scroll"><table><tr><th>Datum</th><th>Titel</th><th>Aufrufe</th><th>Ø angesehen</th><th>Ø Dauer</th><th>Likes</th><th>Kommentare</th><th>Abos +</th></tr>
+  ${rows.map(({v,a,s})=>`<tr><td>${esc(v.date)}</td><td>${esc(v.title)}</td><td>${fmtN(a.views??s.viewCount)}</td><td>${a.averageViewPercentage!=null?a.averageViewPercentage.toFixed(1)+" %":"–"}</td><td>${a.averageViewDuration!=null?a.averageViewDuration+" s":"–"}</td><td>${fmtN(a.likes??s.likeCount)}</td><td>${fmtN(a.comments??s.commentCount)}</td><td>${fmtN(a.subscribersGained)}</td></tr>`).join("")||'<tr><td colspan="8" class="muted">Noch keine Daten.</td></tr>'}</table></div>
+  ${(an.unavailable||[]).map(u=>`<p class="small muted">ℹ️ ${esc(u)}</p>`).join("")}</div>`;
+  // ---------- KI-Anbieter
+  const cfg=S.config||{};
+  const chk=pre?.checks||{};
+  const prov=[["Text-KI",(cfg.llm?.provider_chain||[]).map(p=>[p,chk["textki_"+p]])],["Bild-KI",(cfg.images?.provider_chain||[]).map(p=>[p,null])],["Stimme",(cfg.voice?.provider_chain||[]).map(p=>[p,null])]];
+  $("#t-ai").innerHTML=`<div class="grid two">${prov.map(([n,list])=>`<div class="card"><h3>${n}</h3><table>${list.map(([p,c],i)=>`<tr><td>${i+1}.</td><td><b>${esc(p)}</b></td><td class="small">${c?(c.ok?'<span class="ok">antwortet</span>':`<span class="warn">${esc(c.detail)}</span>`):'<span class="muted">Reserve</span>'}</td><td class="small muted">kostenlos</td></tr>`).join("")}</table></div>`).join("")}
+  <div class="card"><h3>Stimme & Stil</h3><table><tr><td>Stimme</td><td>${esc(cfg.voice?.voice)}</td></tr><tr><td>Reserve</td><td>${esc((cfg.voice?.fallback_voices||[]).join(", "))}</td></tr><tr><td>Tempo / Tonhöhe</td><td>${cfg.voice?.base_rate}% / ${cfg.voice?.base_pitch} Hz</td></tr><tr><td>Bildstil</td><td class="small muted">${esc(cfg.images?.style_suffix)}</td></tr></table>
+  <p class="small muted">Änderbar in <a target="_blank" href="${repoUrl()}/edit/main/config/autotube.json">config/autotube.json</a>.</p></div></div>`;
+  // ---------- Kosten
+  const lim=cfg.limits||{};
+  const sum=(pre)=>Object.entries(usageToday).filter(([k])=>k.startsWith(pre)).reduce((a,[,v])=>a+v,0);
+  const meter=(l,u,m)=>`<div style="margin:10px 0"><div class="small" style="display:flex;justify-content:space-between"><span>${l}</span><span class="muted">${fmtN(u)} / ${fmtN(m)}</span></div><div class="bar"><i style="width:${Math.min(100,u/m*100||0)}%"></i></div></div>`;
+  $("#t-costs").innerHTML=`<div class="grid two"><div class="card"><h3>Heute verbraucht</h3>${meter("Text-KI-Aufrufe",sum("llm:"),lim.llm_calls_per_day)}${meter("Bild-Generierungen",sum("image:"),lim.image_calls_per_day)}${meter("Sprachausgaben",sum("tts:"),lim.tts_calls_per_day)}${meter("YouTube-Kontingent (Einheiten, geschätzt)",sum("youtube_units:"),lim.youtube_units_per_day)}</div>
+  <div class="card"><h3>Budget</h3><div class="kpi"><div class="value ok">0,00 €</div><div class="sub">Tageslimit ${lim.daily_budget_eur} € · Monatslimit ${lim.monthly_budget_eur} € · kostenpflichtige Anbieter: ${lim.allow_paid_providers?'<span class="bad">erlaubt</span>':'<span class="ok">gesperrt</span>'}</div></div>
+  <p class="small muted">Alle Anbieter laufen über Gratis-Kontingente. Bei Erreichen eines Tageslimits stoppt die Produktion automatisch bis zum nächsten Tag.</p></div></div>
+  <div class="card" style="margin-top:14px"><h3>Verlauf</h3><div class="scroll"><table><tr><th>Tag</th><th>Text-KI</th><th>Bilder</th><th>Stimme</th><th>YouTube-Einheiten</th><th>Kosten</th></tr>${Object.keys(S.usage||{}).sort().reverse().slice(0,30).map(d=>{const u=S.usage[d];const g=p=>Object.entries(u).filter(([k])=>k.startsWith(p)).reduce((a,[,v])=>a+v,0);return `<tr><td>${d}</td><td>${g("llm:")}</td><td>${g("image:")}</td><td>${g("tts:")}</td><td>${g("youtube_units:")}</td><td>${(u.cost_eur||0).toFixed(2)} €</td></tr>`}).join("")}</table></div></div>`;
+  // ---------- Logs
+  $("#t-logs").innerHTML=`<div class="grid two"><div class="card"><h3>Aktivitätsprotokoll</h3><div class="log">${(S.activity||[]).slice().reverse().map(a=>`<div><span class="${a.level==="error"?"bad":a.level==="warning"?"warn":"muted"}">${fmtD(a.ts)} · ${esc(a.level)}</span><br>${esc(a.msg)}</div>`).join("")||"–"}</div></div>
+  <div class="card"><h3>Workflow-Läufe</h3><div class="log">${(S.runs||[]).slice().reverse().map(r=>`<div>${fmtD(r.ts)} · <b>${esc(r.kind)}</b> → ${esc(r.result)} ${r.url?`· <a target="_blank" href="${esc(r.url)}">Log</a>`:""}</div>`).join("")||"–"}</div>
+  <p class="small" style="margin-top:12px"><a target="_blank" href="${repoUrl()}/actions">Alle Actions-Logs</a> · <a target="_blank" href="${repoUrl()}/issues?q=label%3Aautotube">Benachrichtigungen</a></p></div></div>
+  <div class="card" style="margin-top:14px"><h3>Einstellungen (config/autotube.json)</h3><pre>${esc(JSON.stringify(cfg,null,2))}</pre></div>`;
+}
+function kpi(l,v,s,c=""){return `<div class="card kpi"><div class="label">${l}</div><div class="value ${c}">${v}</div><div class="sub">${s||""}</div></div>`}
+function subsDelta(an){const d=an.channel_daily||[];if(!d.length)return"Analytics folgen";const n=d.reduce((a,x)=>a+(x.subscribersGained||0)-(x.subscribersLost||0),0);return `${n>=0?"+":""}${n} in 28 Tagen`}
+function barList(t,obj){const e=Object.entries(obj||{});if(!e.length)return"";const m=Math.max(...e.map(([,v])=>v.score));return `<h3 style="margin-top:14px">${t}</h3>`+e.sort((a,b)=>b[1].score-a[1].score).map(([k,v])=>`<div style="margin:8px 0"><div class="small" style="display:flex;justify-content:space-between"><span>${esc(k)}</span><span class="muted">${v.score.toFixed(2)} · ${v.n} Videos</span></div><div class="bar"><i style="width:${v.score/m*100}%"></i></div></div>`).join("")}
+function lineChart(pts,color="var(--purple)"){if(!pts.length)return'<div class="empty small">Noch keine Daten — Analytics werden täglich nach 18:00 abgerufen.</div>';const W=600,H=170,P=26;const ys=pts.map(p=>+p[1]||0);const max=Math.max(1,...ys);const x=i=>P+i*(W-2*P)/Math.max(1,pts.length-1);const y=v=>H-P-(v/max)*(H-2*P);const d=ys.map((v,i)=>`${i?"L":"M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join("");
+return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img"><defs><linearGradient id="g${color.length}" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="${color}" stop-opacity=".35"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></linearGradient></defs>
+<line x1="${P}" x2="${W-P}" y1="${H-P}" y2="${H-P}" stroke="#26262f"/><text x="${P}" y="14">${fmtN(max)}</text><text x="${P}" y="${H-6}">${esc(pts[0][0])}</text><text x="${W-P}" y="${H-6}" text-anchor="end">${esc(pts.at(-1)[0])}</text>
+<path d="${d} L${x(ys.length-1)},${H-P} L${x(0)},${H-P}Z" fill="url(#g${color.length})"/><path d="${d}" fill="none" stroke="${color}" stroke-width="2.2"/></svg>`}
+function calendar(days){const now=new Date();const y=+now.toLocaleDateString("en-CA",{timeZone:"Europe/Berlin"}).slice(0,4),m=+now.toLocaleDateString("en-CA",{timeZone:"Europe/Berlin"}).slice(5,7)-1;
+let html=`<h3>${now.toLocaleDateString("de-DE",{month:"long",year:"numeric"})}</h3><div class="cal">`+["Mo","Di","Mi","Do","Fr","Sa","So"].map(d=>`<div class="h">${d}</div>`).join("");
+const first=new Date(Date.UTC(y,m,1));const off=(first.getUTCDay()+6)%7;for(let i=0;i<off;i++)html+="<div></div>";const n=new Date(Date.UTC(y,m+1,0)).getUTCDate();const today=now.toLocaleDateString("sv-SE",{timeZone:"Europe/Berlin"});
+for(let d=1;d<=n;d++){const k=`${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;const it=days[k];html+=`<div class="d ${k===today?"today":""}"><b>${d}</b>${it?stTag(it.status)+`<span class="small muted" style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(it.title||"")}</span>`:(k>=today&&S.autopilot?.enabled?'<span class="s s-other">18:00</span>':"")}</div>`}
+return html+"</div>"}
+load();
+</script>
+</body>
+</html>

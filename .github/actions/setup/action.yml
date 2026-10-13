@@ -1,0 +1,25 @@
+name: "AutoTube Setup"
+description: "Python, FFmpeg und Abhängigkeiten installieren"
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+        cache: pip
+        cache-dependency-path: requirements.txt
+    - name: FFmpeg installieren
+      shell: bash
+      run: |
+        if ! command -v ffmpeg >/dev/null; then
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg >/dev/null
+        fi
+        ffmpeg -hide_banner -filters 2>/dev/null | grep -q " ass " || { echo "FFmpeg ohne libass"; exit 1; }
+        ffmpeg -version | head -1
+    - name: Python-Pakete installieren
+      shell: bash
+      run: |
+        python -m pip install --upgrade pip -q
+        pip install -q -r requirements.txt
+        pip install -q "piper-tts>=1.2" || echo "::warning::piper-tts (Offline-Stimme als Reserve) nicht installiert"

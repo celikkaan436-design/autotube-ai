@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "repo": "xKaan-dev/GG",
+  "autopilot": {
+    "enabled": false,
+    "activated_at": null,
+    "deactivated_at": null,
+    "last_change_reason": null
+  },
+  "channel": null,
+  "preflight": null,
+  "first_private_upload": null,
+  "days": {},
+  "videos": [],
+  "stories": [],
+  "analytics": {
+    "updated_at": null,
+    "channel_daily": [],
+    "videos": {},
+    "insights": null
+  },
+  "usage": {},
+  "activity": [
+    {
+      "ts": "2026-10-09T20:27:21+00:00",
+      "level": "info",
+      "msg": "AutoTube AI installiert — Einrichtung siehe README"
+    }
+  ],
+  "runs": []
+}

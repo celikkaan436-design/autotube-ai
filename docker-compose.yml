@@ -1,0 +1,14 @@
+services:
+  autotube:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - ./data:/app/data      # Zustand, Storys, Analytics (persistent)
+      - ./work:/app/work      # Checkpoints / temporäre Dateien
+  dashboard:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports: ["8080:80"]
+    volumes:
+      - ./site:/usr/share/nginx/html:ro
