@@ -51,7 +51,7 @@ class VoiceConfig(BaseModel):
 
 class LLMConfig(BaseModel):
     provider_chain: list[Literal["gemini", "pollinations", "openrouter"]] = ["gemini", "pollinations", "openrouter"]
-    gemini_models: list[str] = ["gemini-2.5-flash", "gemini-2.5-flash-lite"]
+    gemini_models: list[str] = ["gemini-3.8-flash", "gemini-3.6-flash", "gemini-2.5-flash", "gemini-3.5-flash-lite", "gemini-2.5-flash-lite"]
     pollinations_model: str = "openai"
     openrouter_model: str = "deepseek/deepseek-chat-v3-0324:free"
     temperature: float = 1.0

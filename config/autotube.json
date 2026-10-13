@@ -2,19 +2,40 @@
   "channel_name": "AutoTube Stories",
   "timezone": "Europe/Berlin",
   "publish_time": "18:00",
-  "genres": ["Mystery", "Suspense", "Horror", "Plot-Twist"],
+  "genres": [
+    "Mystery",
+    "Suspense",
+    "Horror",
+    "Plot-Twist"
+  ],
   "voice": {
     "voice": "de-DE-ConradNeural",
-    "fallback_voices": ["de-DE-KillianNeural", "de-DE-FlorianMultilingualNeural"],
+    "fallback_voices": [
+      "de-DE-KillianNeural",
+      "de-DE-FlorianMultilingualNeural"
+    ],
     "base_rate": 4,
     "base_pitch": -2
   },
   "llm": {
-    "provider_chain": ["gemini", "pollinations", "openrouter"],
-    "gemini_models": ["gemini-2.5-flash", "gemini-2.5-flash-lite"]
+    "provider_chain": [
+      "gemini",
+      "pollinations",
+      "openrouter"
+    ],
+    "gemini_models": [
+      "gemini-3.8-flash",
+      "gemini-3.6-flash",
+      "gemini-2.5-flash",
+      "gemini-3.5-flash-lite",
+      "gemini-2.5-flash-lite"
+    ]
   },
   "images": {
-    "provider_chain": ["pollinations", "cloudflare"],
+    "provider_chain": [
+      "pollinations",
+      "cloudflare"
+    ],
     "max_fallback_scenes": 2
   },
   "limits": {

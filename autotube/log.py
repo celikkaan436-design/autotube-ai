@@ -13,6 +13,7 @@ _SECRET_PATTERNS = [
     re.compile(r"ya29\.[0-9A-Za-z_\-\.]+"),            # Google Access Token
     re.compile(r"1//[0-9A-Za-z_\-]{20,}"),             # Google Refresh Token
     re.compile(r"AIza[0-9A-Za-z_\-]{30,}"),            # Google API Key
+    re.compile(r"AQ\.[0-9A-Za-z_\-\.]{20,}"),          # Google Authorization Key (neues AI-Studio-Format)
     re.compile(r"GOCSPX-[0-9A-Za-z_\-]+"),             # Google Client Secret
     re.compile(r"(?i)bearer\s+[0-9A-Za-z\._\-]{12,}"),
     re.compile(r"sk-or-v1-[0-9a-f]{20,}"),             # OpenRouter
