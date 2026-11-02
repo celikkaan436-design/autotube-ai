@@ -1,0 +1,24 @@
+# Abhängigkeiten und Build
+node_modules/
+dist/
+coverage/
+
+# Secrets – niemals committen
+.env
+.env.*
+!.env.example
+
+# Laufzeitdaten: Datenbank, WAL, Proof-Staging, Exporte, Backups
+data/*
+!data/.gitkeep
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+*.db
+backups/
+exports/
+*.zip
+
+# Sonstiges
+*.log
+.DS_Store

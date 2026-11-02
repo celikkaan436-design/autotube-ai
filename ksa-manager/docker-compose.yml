@@ -1,0 +1,31 @@
+# Start:   docker compose up -d --build
+# Logs:    docker compose logs -f
+# Stop:    docker compose down          (Daten bleiben im Volume "ksa-data")
+services:
+  ksa-manager:
+    build: .
+    image: ksa-manager:1.0.0
+    container_name: ksa-manager
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_PATH: /app/data/ksa.sqlite
+      PROOF_STORAGE_DIR: /app/data/proofs
+    volumes:
+      - ksa-data:/app/data
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    stop_grace_period: 30s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  ksa-data:
